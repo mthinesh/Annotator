@@ -1,0 +1,23 @@
+{
+	"name": "NodejsStarterApp",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"start": "node app.js"
+	},
+	"dependencies": {
+		"express": "4.15.x",
+		"cfenv": "1.0.x",
+		"body-parser": "^1.18.3",
+		"cors": "^2.7.1",
+		"express-session": "latest",
+		"connect-cloudant-store": "latest",
+		"cloudant": "latest",
+		"xmlhttprequest": "latest",
+		"axios": "latest"
+	},
+	"repository": {},
+	"engines": {
+		"node": "6.x"
+	}
+}

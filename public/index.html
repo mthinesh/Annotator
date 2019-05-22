@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>ANNOTATOR</title>
+
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="js/utils.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="css/style.css" media="all">
+	<link rel="stylesheet" type="text/css" href="css/autocomplete.css" media="all">
+
+
+	 <!-- Compiled and minified CSS -->
+	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+	 <!-- Compiled and minified JavaScript -->
+	 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+	.loader {
+		position: absolute;
+	  border: 16px solid #f3f3f3;
+	  border-radius: 50%;
+	  border-top: 16px solid #3498db;
+	  width: 120px;
+	  height: 120px;
+	  top: 50%;
+  	  left: 45%;
+	  -webkit-animation: spin 2s linear infinite; /* Safari */
+	  animation: spin 2s linear infinite;
+	}
+	
+	/* Safari */
+	@-webkit-keyframes spin {
+	  0% { -webkit-transform: rotate(0deg); }
+	  100% { -webkit-transform: rotate(360deg); }
+	}
+	
+	@keyframes spin {
+	  0% { transform: rotate(0deg); }
+	  100% { transform: rotate(360deg); }
+	}
+	</style>
+</head>
+<body>
+
+<!-- Navbar Begins -->
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+    	<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
+      <a class="navbar-brand" href="#">Annotator</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="index.html">HOME</a></li>
+      <li><a href="#">A-Z WORDS</a></li>
+      <li><a href="#">ABOUT US</a></li>
+      <li><a href="#">FEEDBACK</a></li>
+    </ul>
+</div>
+  </div>
+</nav>
+<!-- Navbar ends -->
+<br>
+<div class="container">
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10">
+			<table class="table table-bordered">
+				<tbody><tr class="active">
+					<th>
+						Search
+					</th>
+				</tr>
+				<tr>
+					<td>
+						<div class="row">
+							<div class="col-md-10">
+								<div class="search-bar"><input type="text" class=" text1" id="searchword" placeholder="Enter a Word"></div>
+							</div>
+							<div class="col-md-2">
+								<div style="padding-top: 10px; padding-right: 10px;"><button class="button1" id="btngo">GO</button></div>
+							</div>
+						</div>
+						
+					</td>
+				</tr>
+			</tbody></table>
+		</div>
+	</div>
+</div>
+<br>
+<div id="div_err" style="display:none;"  class="container">
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10" style="text-align:center;">
+			<label id="error_msg" style="color:red;"></label>
+		</div>
+	</div>
+</div>
+
+<div id="div_loading" style="display:none;" class="container">
+	<div class="row" style="text-align:center;">
+			
+				<div class="loader"></div>
+				<div>
+					<label id="error_msg" style="color:red;"></label>
+				</div>
+		
+	</div>
+</div>
+<div class="container" id="div_result">
+	<div class="row">
+		<div class="col-md-1"></div>
+
+		<div class="col-md-10">
+			<table class="table-bordered" style="width: 100%">
+				<colgroup><col width="50%">
+				</colgroup><tbody><tr class="active">
+					<th class="th1">Selected Definitions</th>
+					<th class="th1">Results <label id="resultnb"></label></th>
+				</tr>
+				<tr>
+					<td style="vertical-align: top; padding: 5px;" id="td_selected"></td>
+					<td id="td_results">
+
+					</td>
+				</tr>
+			</tbody></table>
+		</div>
+		<input type="hidden" id="selected_id">
+
+	</div>
+</div>
+
+
+<script>
+
+	$(document).ready(function() {
+
+		/*eslint-env jquery */
+		$( "#btngo" ).click(function() {
+			//alert("click");
+			$("#div_err").hide();
+			$("#div_loading").show();
+			$("#div_result").hide();
+			$("#td_selected").show().html("");
+			$("#td_results").show().html("");
+			$("#resultnb").html("(0)");
+			var searchword = $("#searchword").val();
+
+			$.get("/api/core/readdocument?searchword=" + searchword, function (data) {
+				/* Get definitions from Cached DB */
+				$("#td_selected").show().html("");
+				resultDb = data; // from DB
+				$("#td_selected").show().html(formHtmlDeleteCard(resultDb));
+
+				$.get("/api/core/connectonlinedictionary?searchword=" + searchword, function (dic) {
+					$("#div_result").show();
+					$("#div_loading").hide();
+					// alert(dic.error);
+					if (dic.error != "")
+					{
+						$("#div_err").show();
+						$("#error_msg").html(dic.error);
+					}else{
+						result = dic.definitions; // set to global
+						$("#resultnb").html("(" +result.length+ ")");
+						$("#td_results").show().html(formHtmlSelectCard(result));
+					}
+				});
+
+			});
+
+			
+		});
+
+
+		// Get the input field
+		var input = document.getElementById("searchword");
+
+		// Execute a function when the user releases a key on the keyboard
+		input.addEventListener("keyup", function (event) {
+			// Cancel the default action, if needed
+			event.preventDefault();
+			// Number 13 is the "Enter" key on the keyboard
+			if (event.keyCode === 13) {
+				// Trigger the button element with a click
+				document.getElementById("btngo").click();
+			}
+		});
+	});
+</script>
+<script src="js/autocomplete.js"></script>
+
+</body></html>
