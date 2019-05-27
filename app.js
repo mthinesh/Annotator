@@ -43,6 +43,7 @@ app.listen(appEnv.port, '0.0.0.0', function() {
   console.log("server starting on " + appEnv.url);
 });
 
+var externalAPI=require('./server/js/externalAPI.js');
 
 var db;
 
@@ -546,6 +547,31 @@ app.get('/api/core/test4', function(req, res){
 });
 
 
+app.get('/api/adaptor/dictionary1', function (req, res){
+    console.log(req.query.term);
+    var searchword=req.query.term;
+	externalAPI.dictionaryAPI1(searchword, res);
+});
+app.get('/api/adaptor/dictionary2', function (req, res){
+    console.log(req.query.term);
+    var searchword=req.query.term;
+	externalAPI.dictionaryAPI2(searchword, res);
+});
+app.get('/api/adaptor/dictionary3', function (req, res){
+    console.log(req.query.term);
+    var searchword=req.query.term;
+	externalAPI.dictionaryAPI3(searchword, res);
+});
+app.get('/api/adaptor/dictionary4', function (req, res){
+    console.log(req.query.term);
+    var searchword=req.query.term;
+	externalAPI.dictionaryAPI4(searchword, res);
+});
+app.get('/api/adaptor/dictionary5', function (req, res){
+    console.log(req.query.term);
+    var searchword=req.query.term;
+	externalAPI.dictionaryAPI5(searchword, res);
+});
 /*
  * End Testing
  */
